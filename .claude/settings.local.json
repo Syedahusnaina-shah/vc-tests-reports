@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cd \"C:\\\\Users\\\\Syeda Husnaina\\\\vc-tests\"; $env:PLAYWRIGHT_BROWSERS_PATH=\"D:\\\\playwright-browsers\"; npx playwright test as1360-complete.spec.js --workers=1 --reporter=list 2>&1)",
+      "PowerShell(cd \"C:\\\\Users\\\\Syeda Husnaina\\\\vc-tests\"; $env:JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jre1.8.0_491\"; npx allure generate allure-results --clean -o allure-report 2>&1)"
+    ]
+  }
+}
