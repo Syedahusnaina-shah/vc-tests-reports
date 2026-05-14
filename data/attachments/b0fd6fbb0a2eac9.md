@@ -1,0 +1,328 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: as1360-master.spec.js >> 🟣 INTERACTIVE ELEMENTS — Buttons, inputs, tabs fully visible >> ✅ TC-I03 | [1366x768] Sidebar does not overlap main content
+- Location: as1360-master.spec.js:811:5
+
+# Error details
+
+```
+Error: [1366x768] Sidebar overlaps main content
+
+expect(received).toBe(expected) // Object.is equality
+
+Expected: false
+Received: true
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e8]:
+  - generic [ref=e10]:
+    - generic [ref=e11]:
+      - img [ref=e13]
+      - heading "Virtual Coordinator Setup" [level=1] [ref=e17]
+    - img "close" [ref=e19] [cursor=pointer]:
+      - img [ref=e20]
+  - generic [ref=e22]:
+    - generic [ref=e25]:
+      - generic [ref=e27]:
+        - img [ref=e32] [cursor=pointer]
+        - generic [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]: Create Coordinator
+          - generic [ref=e41]: Add details to your project
+      - generic [ref=e43]:
+        - img [ref=e48] [cursor=pointer]
+        - generic [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: Train Coordinator
+          - generic [ref=e57]: Upload data to start the training process
+      - generic [ref=e59]:
+        - img [ref=e64] [cursor=pointer]
+        - generic [ref=e71] [cursor=pointer]:
+          - generic [ref=e72]: Create Content
+          - generic [ref=e73]: Manage VC response content
+      - generic [ref=e75]:
+        - img [ref=e80] [cursor=pointer]
+        - generic [ref=e87] [cursor=pointer]:
+          - generic [ref=e88]: Configure Notifications
+          - generic [ref=e89]: Manage alerts based on VC categorizations
+      - generic [ref=e91]:
+        - img [ref=e95] [cursor=pointer]
+        - generic [ref=e100] [cursor=pointer]:
+          - generic [ref=e101]: Test Coordinator
+          - generic [ref=e102]: Test the VC with example HCP messages
+    - generic [ref=e106]:
+      - generic [ref=e107]:
+        - heading "Create Coordinator" [level=2] [ref=e108]
+        - paragraph [ref=e109]: Add details to your project
+      - generic [ref=e110]:
+        - generic [ref=e111]:
+          - generic [ref=e117]:
+            - generic [ref=e118]: Account
+            - textbox "Account" [disabled] [ref=e119]: Apex Pharma Solutions
+          - generic [ref=e125]:
+            - generic [ref=e126]: Therapeutic Area *
+            - generic [ref=e127] [cursor=pointer]:
+              - generic [ref=e129]:
+                - combobox [ref=e131]
+                - generic: Select Therapeutic Area
+              - img [ref=e132]:
+                - img [ref=e133]
+        - generic [ref=e140]:
+          - generic [ref=e141]: Project Name *
+          - textbox "e.g. Cardiology Assistant" [ref=e142]: Test Agent
+        - generic [ref=e148]:
+          - generic [ref=e149]: Project Description (optional)
+          - generic [ref=e150]:
+            - textbox "Brief description of your Virtual Coordinator..." [ref=e151]
+            - generic:
+              - generic: 0 / 500
+        - generic [ref=e152]:
+          - heading "Channels" [level=3] [ref=e153]
+          - generic [ref=e159]:
+            - generic [ref=e160]: Channels *
+            - generic [ref=e161] [cursor=pointer]:
+              - generic [ref=e163]:
+                - combobox [ref=e165]
+                - generic: Select Channel
+              - img [ref=e166]:
+                - img [ref=e167]
+        - generic [ref=e169]:
+          - heading "Integrations (Optional)" [level=3] [ref=e170]
+          - paragraph [ref=e171]: Integrations can be included during the VC build process.
+          - generic [ref=e172]:
+            - generic [ref=e178]:
+              - generic [ref=e179]: Connect
+              - generic [ref=e180] [cursor=pointer]:
+                - generic [ref=e182]:
+                  - combobox [ref=e184]
+                  - generic: Select Connect Integration
+                - img [ref=e185]:
+                  - img [ref=e186]
+            - generic [ref=e193]:
+              - generic [ref=e194]: Samples
+              - generic [ref=e195] [cursor=pointer]:
+                - generic [ref=e197]:
+                  - combobox [ref=e199]
+                  - generic: Select Sample Integration
+                - img [ref=e200]:
+                  - img [ref=e201]
+  - generic [ref=e204]:
+    - button "Save as Draft" [disabled] [ref=e205]:
+      - generic: Save as Draft
+    - button "Update" [ref=e206] [cursor=pointer]:
+      - generic [ref=e207]: Update
+```
+
+# Test source
+
+```ts
+  728 |   for (const res of RESOLUTIONS) {
+  729 |     test(`✅ TC-F04 | [${res.name}] Flagged Messages tab — no overflow, buttons aligned`, async ({ browser }) => {
+  730 |       const ctx  = await browser.newContext({ viewport: { width: res.width, height: res.height } });
+  731 |       const page = await ctx.newPage();
+  732 |       await login(page);
+  733 |       await goToFlaggedTab(page);
+  734 | 
+  735 |       const label = `${res.name} | Flagged Messages`;
+  736 |       await checkNoHorizontalScroll(page, label);
+  737 |       await checkNoOverflow(page, label, res.width);
+  738 |       await checkButtonsVisible(page, label, res.width);
+  739 |       await checkTextNotClipped(page, label);
+  740 |       await screenshot(page, `f04_flagged_resp_${res.name}`);
+  741 |       await ctx.close();
+  742 |     });
+  743 |   }
+  744 | 
+  745 |   test('✅ TC-F05 | Tab switching Single → Bulk → Flagged keeps layout stable', async ({ page }) => {
+  746 |     await login(page);
+  747 |     await goToTestCoordinatorStep(page);
+  748 | 
+  749 |     const tabSequence = [
+  750 |       { text: 'Single Message Testing' },
+  751 |       { text: 'Bulk testing' },
+  752 |       { text: 'Flagged messages' },
+  753 |     ];
+  754 | 
+  755 |     for (const { text } of tabSequence) {
+  756 |       const tab     = page.locator(`text=${text}`).first();
+  757 |       const visible = await tab.isVisible().catch(() => false);
+  758 |       if (visible) {
+  759 |         await tab.click();
+  760 |         await page.waitForTimeout(800);
+  761 |         await checkNoHorizontalScroll(page, `Tab: ${text}`);
+  762 |         await screenshot(page, `f05_tab_${text.replace(/\s/g, '_').toLowerCase()}`);
+  763 |       }
+  764 |     }
+  765 |   });
+  766 | 
+  767 | });
+  768 | 
+  769 | // ─────────────────────────────────────────────────────────────────────────────
+  770 | // 🟣 SECTION 5 — INTERACTIVE ELEMENTS & LAYOUT INTEGRITY
+  771 | // ─────────────────────────────────────────────────────────────────────────────
+  772 | 
+  773 | test.describe('🟣 INTERACTIVE ELEMENTS — Buttons, inputs, tabs fully visible', () => {
+  774 | 
+  775 |   for (const res of RESOLUTIONS) {
+  776 |     test(`✅ TC-I01 | [${res.name}] All interactive elements within viewport on wizard pages`, async ({ browser }) => {
+  777 |       const ctx  = await browser.newContext({ viewport: { width: res.width, height: res.height } });
+  778 |       const page = await ctx.newPage();
+  779 |       await login(page);
+  780 |       await goToPage(page, VC_PAGES[0].path);
+  781 | 
+  782 |       const label = `${res.name} | Interactive Elements`;
+  783 |       await checkInteractiveElements(page, label, res.width);
+  784 |       await ctx.close();
+  785 |     });
+  786 |   }
+  787 | 
+  788 |   for (const res of RESOLUTIONS) {
+  789 |     test(`✅ TC-I02 | [${res.name}] Footer CTAs (Next, Save as Draft, Back) visible and not clipped`, async ({ browser }) => {
+  790 |       const ctaTexts = ['Next', 'Save as Draft', 'Save', 'Cancel', 'Back'];
+  791 |       const ctx      = await browser.newContext({ viewport: { width: res.width, height: res.height } });
+  792 |       const page     = await ctx.newPage();
+  793 |       await login(page);
+  794 |       await goToPage(page, VC_PAGES[0].path);
+  795 | 
+  796 |       for (const cta of ctaTexts) {
+  797 |         const btn     = page.locator(`button:has-text("${cta}")`).first();
+  798 |         const visible = await btn.isVisible().catch(() => false);
+  799 |         if (!visible) continue;
+  800 | 
+  801 |         const box = await btn.boundingBox();
+  802 |         if (!box) continue;
+  803 |         expect(box.x + box.width, `CTA "${cta}" overflows viewport`).toBeLessThanOrEqual(res.width + 5);
+  804 |         expect(box.y + box.height, `CTA "${cta}" is below viewport`).toBeLessThanOrEqual(res.height + 200);
+  805 |       }
+  806 |       await ctx.close();
+  807 |     });
+  808 |   }
+  809 | 
+  810 |   for (const res of RESOLUTIONS) {
+  811 |     test(`✅ TC-I03 | [${res.name}] Sidebar does not overlap main content`, async ({ browser }) => {
+  812 |       const ctx  = await browser.newContext({ viewport: { width: res.width, height: res.height } });
+  813 |       const page = await ctx.newPage();
+  814 |       await login(page);
+  815 |       await goToPage(page, VC_PAGES[1].path);
+  816 | 
+  817 |       const sidebar = page.locator('nav, aside, [class*="sidebar"], [class*="side-nav"]').first();
+  818 |       const main    = page.locator('main, [role="main"], [class*="main-content"], [class*="content"]').first();
+  819 | 
+  820 |       const sVisible = await sidebar.isVisible().catch(() => false);
+  821 |       const mVisible = await main.isVisible().catch(() => false);
+  822 | 
+  823 |       if (sVisible && mVisible) {
+  824 |         const sBox = await sidebar.boundingBox();
+  825 |         const mBox = await main.boundingBox();
+  826 |         if (sBox && mBox) {
+  827 |           const overlaps = sBox.x < mBox.x + mBox.width && sBox.x + sBox.width > mBox.x + 10;
+> 828 |           expect(overlaps, `[${res.name}] Sidebar overlaps main content`).toBe(false);
+      |                                                                           ^ Error: [1366x768] Sidebar overlaps main content
+  829 |         }
+  830 |       }
+  831 |       await ctx.close();
+  832 |     });
+  833 |   }
+  834 | 
+  835 |   for (const res of RESOLUTIONS) {
+  836 |     test(`✅ TC-I04 | [${res.name}] No major elements overlap each other`, async ({ browser }) => {
+  837 |       const ctx  = await browser.newContext({ viewport: { width: res.width, height: res.height } });
+  838 |       const page = await ctx.newPage();
+  839 |       await login(page);
+  840 |       await goToPage(page, VC_PAGES[1].path);
+  841 | 
+  842 |       const overlaps = await page.evaluate(() => {
+  843 |         const major = Array.from(document.querySelectorAll(
+  844 |           'header, nav, aside, main, footer, [class*="sidebar"], [class*="header"], [class*="footer"], [class*="content"]'
+  845 |         )).filter(el => {
+  846 |           const r = el.getBoundingClientRect();
+  847 |           return r.width > 50 && r.height > 50;
+  848 |         });
+  849 | 
+  850 |         const found = [];
+  851 |         for (let i = 0; i < major.length; i++) {
+  852 |           for (let j = i + 1; j < major.length; j++) {
+  853 |             if (major[j].contains(major[i]) || major[i].contains(major[j])) continue;
+  854 |             const a = major[i].getBoundingClientRect();
+  855 |             const b = major[j].getBoundingClientRect();
+  856 |             const overlap = a.left < b.right - 10 && a.right > b.left + 10 &&
+  857 |                             a.top < b.bottom - 10 && a.bottom > b.top + 10;
+  858 |             if (overlap) found.push({
+  859 |               a: major[i].tagName + '.' + (major[i].className || '').toString().slice(0, 30),
+  860 |               b: major[j].tagName,
+  861 |             });
+  862 |           }
+  863 |         }
+  864 |         return found.slice(0, 5);
+  865 |       });
+  866 | 
+  867 |       expect(overlaps.length, `[${res.name}] Overlapping elements: ${JSON.stringify(overlaps)}`).toBe(0);
+  868 |       await ctx.close();
+  869 |     });
+  870 |   }
+  871 | 
+  872 |   for (const res of RESOLUTIONS) {
+  873 |     test(`✅ TC-I05 | [${res.name}] No images overflow their containers`, async ({ browser }) => {
+  874 |       const ctx  = await browser.newContext({ viewport: { width: res.width, height: res.height } });
+  875 |       const page = await ctx.newPage();
+  876 |       await login(page);
+  877 |       await goToPage(page, VC_PAGES[0].path);
+  878 | 
+  879 |       const overflowImgs = await page.evaluate((vw) =>
+  880 |         Array.from(document.querySelectorAll('img:not([hidden])'))
+  881 |           .filter(img => {
+  882 |             const r = img.getBoundingClientRect();
+  883 |             return r.right > vw + 5 && r.width > 0;
+  884 |           })
+  885 |           .map(img => ({ src: img.src?.slice(0, 60), right: Math.round(img.getBoundingClientRect().right) }))
+  886 |       , res.width);
+  887 | 
+  888 |       expect(overflowImgs.length, `[${res.name}] Overflowing images: ${JSON.stringify(overflowImgs)}`).toBe(0);
+  889 |       await ctx.close();
+  890 |     });
+  891 |   }
+  892 | 
+  893 |   for (const res of RESOLUTIONS) {
+  894 |     test(`✅ TC-I06 | [${res.name}] No collapsed zero-width containers`, async ({ browser }) => {
+  895 |       const ctx  = await browser.newContext({ viewport: { width: res.width, height: res.height } });
+  896 |       const page = await ctx.newPage();
+  897 |       await login(page);
+  898 |       await goToPage(page, VC_PAGES[1].path);
+  899 | 
+  900 |       const collapsed = await page.evaluate(() =>
+  901 |         Array.from(document.querySelectorAll('main, section, article, [class*="container"], [class*="wrapper"], [class*="panel"]'))
+  902 |           .filter(el => {
+  903 |             const r  = el.getBoundingClientRect();
+  904 |             const cs = window.getComputedStyle(el);
+  905 |             return r.width === 0 && cs.display !== 'none' && cs.visibility !== 'hidden';
+  906 |           })
+  907 |           .map(el => ({ tag: el.tagName, cls: (el.className || '').toString().slice(0, 60) }))
+  908 |           .slice(0, 5)
+  909 |       );
+  910 | 
+  911 |       expect(collapsed.length, `[${res.name}] Collapsed containers: ${JSON.stringify(collapsed)}`).toBe(0);
+  912 |       await ctx.close();
+  913 |     });
+  914 |   }
+  915 | 
+  916 |   for (const res of RESOLUTIONS) {
+  917 |     test(`✅ TC-I07 | [${res.name}] Tab switching keeps layout stable`, async ({ browser }) => {
+  918 |       const ctx  = await browser.newContext({ viewport: { width: res.width, height: res.height } });
+  919 |       const page = await ctx.newPage();
+  920 |       await login(page);
+  921 |       await goToPage(page, VC_PAGES[1].path);
+  922 | 
+  923 |       const tabEls = page.locator('[role="tab"]:visible');
+  924 |       const count  = await tabEls.count();
+  925 | 
+  926 |       for (let i = 0; i < count; i++) {
+  927 |         await tabEls.nth(i).click().catch(() => {});
+  928 |         await page.waitForTimeout(600);
+```
